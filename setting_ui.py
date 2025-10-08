@@ -1,17 +1,13 @@
 import json
 
 from PySide6.QtCore import QTime, QTimer
-from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PySide6.QtWidgets import QMessageBox
 
 # import resources_rc
 from uifile import Ui_Form
 
-app = QApplication([])
-w = QMainWindow()
-w.setFixedSize(690, 427)
 
-
-class AppUI(Ui_Form):
+class SettingUI(Ui_Form):
     def __init__(self, Form):
         super().setupUi(Form)
         """
@@ -27,6 +23,7 @@ class AppUI(Ui_Form):
         self.lineEdit_8.setText(str(data["InfoTextCaption"]))
         self.lineEdit_9.setText(str(data["FuckText"]))
         self.lineEdit_10.setText(str(data["ThanksText"]))
+        self.checkBox.setChecked(data["CI"])
         self.load_times(data.get("Time", []))
         if int(data["ForceCutdown"]) >= 9999999:
             self.checkBox_9.setChecked(False)
@@ -46,7 +43,7 @@ class AppUI(Ui_Form):
         self.pushButton_2.clicked.connect(lambda: self.frame_6.show())
         self.pushButton.clicked.connect(
             lambda: QMessageBox.warning(
-                w,
+                None,
                 "手动设置欲查杀的程序",
                 "该功能仅限高级用户，请在实验性选项中编辑JSON",  # type: ignore
             )
@@ -105,9 +102,10 @@ class AppUI(Ui_Form):
             data["ForceCutdown"] = 10000000
         else:
             data["ForceCutdown"] = int(self.lineEdit.text())
+        data["CI"] = self.checkBox.isChecked()
         with open("setting.json", "w") as file:
             json.dump(data, file)
         self.toast.show()
-        self.timer = QTimer(w)
+        self.timer = QTimer()
         self.timer.timeout.connect(lambda: self.toast.hide())
         self.timer.start(1000)
