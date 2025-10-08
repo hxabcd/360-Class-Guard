@@ -140,7 +140,7 @@ class DialogWindow(QDialog):
         os._exit(0)
 
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("assets/tray_icon.ico"))
     # 创建并显示遮罩窗口
@@ -165,3 +165,7 @@ if __name__ == "__main__":
 
         print("程序在后台运行，等待强制关闭时间...")
         sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()

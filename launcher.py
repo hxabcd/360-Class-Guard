@@ -1,8 +1,8 @@
 import json
+import multiprocessing
 import sys
 import time
 from datetime import datetime, timedelta
-from os import system
 
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction, QIcon
@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QSystemTrayIcon,
 )
 
+from main import main as show_overlay
 from setting_ui import SettingUI
 
 
@@ -91,14 +92,11 @@ class UltraLightLauncher:
 
         return False
 
-    def launch_main_program(self):
-        system("start main.exe")
-        self.calculate_next_ring()
-
     def monitor_loop(self):
         while True:
             if self.should_launch():
-                self.launch_main_program()
+                multiprocessing.Process(target=show_overlay, daemon=True).start()
+                self.calculate_next_ring()
                 time.sleep(1)
             time.sleep(0.1)
 
@@ -198,6 +196,7 @@ class SystemTrayApp:
 
 
 # 嗯造屎山这块。抽象？哪里有抽象
+# TODO: 优化CI集成的触发方式
 class SystemTrayAppCI:
     def __init__(self):
         self.app = QApplication([])
