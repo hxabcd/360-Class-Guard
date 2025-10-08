@@ -1,52 +1,10 @@
 import json
 
 from PySide6.QtCore import QTime, QTimer
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 
 # import resources_rc
 from uifile import Ui_Form
-
-
-def save():
-    """
-    current_dir = pathlib.Path(__file__).parent
-    config_path = current_dir / "setting.json"
-    with open(config_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    """
-    with open("setting.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-    data["cutdown"] = int(ui.lineEdit_2.text())
-    data["CaptionText"] = str(ui.lineEdit_3.text())
-    data["RemindText"] = str(ui.lineEdit_4.text())
-    data["ExtensionText"] = str(ui.lineEdit_6.text())
-    data["DismissText"] = str(ui.lineEdit_7.text())
-    data["InfoTextCaption"] = str(ui.lineEdit_8.text())
-    data["FuckText"] = str(ui.lineEdit_9.text())
-    data["ThanksText"] = str(ui.lineEdit_10.text())
-    time_list = []
-    for i in range(1, 13):
-        if i == 1:
-            time_edit = getattr(ui, "timeEdit", None)
-        else:
-            time_edit = getattr(ui, f"timeEdit_{i}", None)
-        if time_edit:
-            time_str = time_edit.time().toString("HH:mm:ss")
-            if time_str != "00:00:00":
-                time_list.append(time_str)
-    data["Time"] = time_list
-    if not ui.checkBox_9.isChecked():
-        data["ForceCutdown"] = 10000000
-    else:
-        data["ForceCutdown"] = int(ui.lineEdit.text())
-    with open("setting.json", "w") as file:
-        json.dump(data, file)
-    ui.toast.show()
-    ui.timer = QTimer(w)
-    ui.timer.timeout.connect(lambda: ui.toast.hide())
-    ui.timer.start(1000)
-
 
 app = QApplication([])
 w = QMainWindow()
@@ -79,7 +37,7 @@ class AppUI(Ui_Form):
         self.frame_5.hide()
         self.frame_6.hide()
         self.toast.hide()
-        self.pushButton_4.clicked.connect(save)
+        self.pushButton_4.clicked.connect(self.save_config)
         self.Setting.clicked.connect(lambda: self.TextEditWindow.hide())
         self.TextSetting.clicked.connect(lambda: self.TextEditWindow.show())
         self.pushButton_3.clicked.connect(lambda: self.frame_5.show())
@@ -115,8 +73,41 @@ class AppUI(Ui_Form):
                 except Exception as e:
                     print(f"设置时间控件 {i} 失败: {e}")
 
-
-ui = AppUI(w)
-app.setWindowIcon(QIcon("assets/tray_icon.ico"))
-w.show()
-app.exec()
+    def save_config(self):
+        """
+        current_dir = pathlib.Path(__file__).parent
+        config_path = current_dir / "setting.json"
+        with open(config_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        """
+        with open("setting.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+        data["cutdown"] = int(self.lineEdit_2.text())
+        data["CaptionText"] = str(self.lineEdit_3.text())
+        data["RemindText"] = str(self.lineEdit_4.text())
+        data["ExtensionText"] = str(self.lineEdit_6.text())
+        data["DismissText"] = str(self.lineEdit_7.text())
+        data["InfoTextCaption"] = str(self.lineEdit_8.text())
+        data["FuckText"] = str(self.lineEdit_9.text())
+        data["ThanksText"] = str(self.lineEdit_10.text())
+        time_list = []
+        for i in range(1, 13):
+            if i == 1:
+                time_edit = getattr(self, "timeEdit", None)
+            else:
+                time_edit = getattr(self, f"timeEdit_{i}", None)
+            if time_edit:
+                time_str = time_edit.time().toString("HH:mm:ss")
+                if time_str != "00:00:00":
+                    time_list.append(time_str)
+        data["Time"] = time_list
+        if not self.checkBox_9.isChecked():
+            data["ForceCutdown"] = 10000000
+        else:
+            data["ForceCutdown"] = int(self.lineEdit.text())
+        with open("setting.json", "w") as file:
+            json.dump(data, file)
+        self.toast.show()
+        self.timer = QTimer(w)
+        self.timer.timeout.connect(lambda: self.toast.hide())
+        self.timer.start(1000)
